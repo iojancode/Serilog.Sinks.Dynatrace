@@ -66,7 +66,7 @@ namespace Serilog.Sinks.Dynatrace
 
             if (logEvent.Properties.Count != 0)
             {
-                WriteProperties(logEvent.Properties, output);
+                WriteProperties(logEvent.Properties, output, "attr.");
             }
 
             output.Write('}');
