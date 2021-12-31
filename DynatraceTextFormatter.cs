@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using Serilog.Debugging;
@@ -10,16 +11,15 @@ namespace Serilog.Sinks.Dynatrace
 {
     class DynatraceTextFormatter : ITextFormatter
     {
-        private static readonly JsonValueFormatter Instance = new JsonValueFormatter();
         private string _applicationId;
         private string _hostName;
-        private string _env;
+        private string _environment;
 
-        public DynatraceTextFormatter(string applicationId, string hostName, string env)
+        public DynatraceTextFormatter(string applicationId, string hostName, string environment)
         {
             _applicationId = applicationId;
             _hostName = hostName;
-            _env = env;
+            _environment = environment;
         }
 
         public void Format(LogEvent logEvent, TextWriter output)
@@ -53,10 +53,10 @@ namespace Serilog.Sinks.Dynatrace
             output.Write("\",\"host.name\":\"");
             output.Write(_hostName);
 
-            if (_env != null) 
+            if (_environment != null) 
             {
-                output.Write("\",\"env\":\"");
-                output.Write(_env);                
+                output.Write("\",\"environment\":\"");
+                output.Write(_environment);                
             }
 
             output.Write("\",\"content\":");
@@ -74,23 +74,31 @@ namespace Serilog.Sinks.Dynatrace
 
         private static void WriteProperties(
             IReadOnlyDictionary<string, LogEventPropertyValue> properties,
-            TextWriter output)
+            TextWriter output, string prefixKey = "")
         {
-            output.Write(",\"data\":{");
-
-            var precedingDelimiter = "";
-
             foreach (var property in properties)
             {
-                output.Write(precedingDelimiter);
-                precedingDelimiter = ",";
-
-                JsonValueFormatter.WriteQuotedJsonString(property.Key, output);
-                output.Write(':');
-                Instance.Format(property.Value, output);
+                var flatKey = prefixKey + property.Key;
+                switch (property.Value) 
+                {
+                    case ScalarValue scalar:
+                        output.Write(",");
+                        JsonValueFormatter.WriteQuotedJsonString(flatKey, output);
+                        output.Write(':');
+                        JsonValueFormatter.WriteQuotedJsonString(scalar.Value.ToString(), output); // Only values of the String type are supported
+                        break;
+                    case SequenceValue sequence:
+                        int seq = 0;
+                        WriteProperties(sequence.Elements.ToDictionary(e => (seq++).ToString(), e => e), output, flatKey + ".");
+                        break;
+                    case StructureValue structure:
+                        WriteProperties(structure.Properties.ToDictionary(p => p.Name, p => p.Value), output, flatKey + ".");
+                        break;
+                    case DictionaryValue dictionary:
+                        WriteProperties(dictionary.Elements.ToDictionary(e => e.Key.Value.ToString(), e => e.Value), output, flatKey + ".");
+                        break;
+                }
             }
-
-            output.Write('}');
         }
 
         private static void LogNonFormattableEvent(LogEvent logEvent, Exception e)
