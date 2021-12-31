@@ -7,7 +7,9 @@ Serilog Sink that sends log events to Dynatrace https://www.dynatrace.com/
 Example:
 ```csharp
 var log = new LoggerConfiguration()
-    .WriteTo.Dynatrace(accessToken: "xxx.yyyyyy.zzzzz", ingestUrl: "https://{your-environment-id}.live.dynatrace.com/api/v2/logs/ingest")
+    .WriteTo.Dynatrace(
+        accessToken: "xxx.yyyyyy.zzzzz",
+        ingestUrl: "https://{your-environment-id}.live.dynatrace.com/api/v2/logs/ingest")
     .CreateLogger();
 
 var position = new { Latitude = 25, Longitude = 134 };
@@ -17,7 +19,7 @@ log.Information("Processed {@Position} in {Elapsed:000} ms.", position, elapsedM
 
 Prints to Dynatrace console:
 ```
-Oct 10 16:09:13 desktop-r9hnrih myapp Information Processed { Latitude: 25, Longitude: 134 } in 034 ms.
+2021-12-30 23:41...    INFO    Processed { Latitude: 25, Longitude: 134 } in 034 ms.
 ```
 
 [![Nuget](https://img.shields.io/nuget/v/serilog.sinks.dynatrace.svg)](https://www.nuget.org/packages/Serilog.Sinks.Dynatrace/)
