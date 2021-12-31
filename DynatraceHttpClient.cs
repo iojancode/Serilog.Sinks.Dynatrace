@@ -21,7 +21,7 @@ namespace Serilog.Sinks.Dynatrace
         public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent content) 
         {
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = Encoding.UTF8.WebName };
-            return await client.PostAsync(requestUri, content);
+            return await client.PostAsync(requestUri, content).ConfigureAwait(false);
         } 
 
         public void Dispose() => client?.Dispose();
