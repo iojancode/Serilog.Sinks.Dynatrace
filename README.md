@@ -17,9 +17,15 @@ var elapsedMs = 34;
 log.Information("Processed {@Position} in {Elapsed:000} ms.", position, elapsedMs);
 ```
 
-Prints to Dynatrace console:
+Prints to Dynatrace Log Viewer:
 ```
-2021-12-30 23:41...    INFO    Processed { Latitude: 25, Longitude: 134 } in 034 ms.
+2021-12-30 16:41...    INFO    Processed { Latitude: 25, Longitude: 134 } in 034 ms.
+
+application.id = unknown
+attr.elapsed = 34
+attr.position.latitude = 25
+attr.position.longitude = 134
+host.name = desktop-r9hnrih
 ```
 
 [![Nuget](https://img.shields.io/nuget/v/serilog.sinks.dynatrace.svg)](https://www.nuget.org/packages/Serilog.Sinks.Dynatrace/)
