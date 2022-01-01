@@ -4,7 +4,9 @@ Serilog Sink that sends log events to Dynatrace https://www.dynatrace.com/
 
 **Package** - [Serilog.Sinks.Dynatrace](http://nuget.org/packages/serilog.sinks.dynatrace) | **Platforms** - .NET 4.5, netstandard2.0
 
-Example:
+## Getting started
+
+Enable the sink and log:
 ```csharp
 var log = new LoggerConfiguration()
     .WriteTo.Dynatrace(
@@ -26,6 +28,42 @@ attr.elapsed = 34
 attr.position.latitude = 25
 attr.position.longitude = 134
 host.name = desktop-r9hnrih
+```
+
+## Log from ASP.NET Core & appsettings.json
+
+Extra packages:
+```shell
+dotnet add package Serilog.AspNetCore
+dotnet add package Serilog.Settings.Configuration
+```
+
+Add `UseSerilog` to the Generic Host:
+```csharp
+public static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .UseSerilog((context, services, logConfig) => 
+            logConfig.ReadFrom.Configuration(context.Configuration))
+        .ConfigureWebHostDefaults(webBuilder => {
+            webBuilder.UseStartup<Startup>();
+        });
+```
+
+Add to `appsettings.json` configuration:
+```json
+{
+    "Serilog": {
+        "Using": [ "Serilog.Sinks.Dynatrace" ],
+        "MinimumLevel": "Information",
+        "WriteTo": [{
+            "Name": "Dynatrace",
+            "Args": {
+                "accessToken": "xxx.yyyyyy.zzzzz",
+                "ingestUrl": "https://{your-environment-id}.live.dynatrace.com/api/v2/logs/ingest"
+            }
+        }]
+    }
+}
 ```
 
 [![Nuget](https://img.shields.io/nuget/v/serilog.sinks.dynatrace.svg)](https://www.nuget.org/packages/Serilog.Sinks.Dynatrace/)
