@@ -14,6 +14,7 @@ namespace Serilog
             string ingestUrl,
             string applicationId = null,
             string hostName = null,
+            string environment = null,
             int? batchPostingLimit = null,
             int? queueLimit = null,
             TimeSpan? period = null,
@@ -26,7 +27,8 @@ namespace Serilog
             if (applicationId == null) applicationId = "unknown";
             if (hostName == null) hostName = Dns.GetHostName().ToLower();
 
-            var envName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? 
+            var envName = Environment.GetEnvironmentVariable(environment) ??
+                Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? 
                 Environment.GetEnvironmentVariable("ASPNET_ENVIRONMENT");
 
             return sinkConfiguration.Http(ingestUrl,
