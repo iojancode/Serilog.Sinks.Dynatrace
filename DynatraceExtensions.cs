@@ -26,7 +26,8 @@ namespace Serilog
             if (applicationId == null) applicationId = "unknown";
             if (hostName == null) hostName = Dns.GetHostName().ToLower();
 
-            var envName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? 
+            var envName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ??
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
                 Environment.GetEnvironmentVariable("ASPNET_ENVIRONMENT");
 
             return sinkConfiguration.Http(ingestUrl,
@@ -57,7 +58,8 @@ namespace Serilog
             if (applicationId == null) applicationId = "unknown";
             if (hostName == null) hostName = Dns.GetHostName().ToLower();
 
-            var envName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? 
+            var envName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ??
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
                 Environment.GetEnvironmentVariable("ASPNET_ENVIRONMENT");
 
             return sinkConfiguration.DurableHttp(ingestUrl,
