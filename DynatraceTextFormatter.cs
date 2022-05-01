@@ -11,15 +11,19 @@ namespace Serilog.Sinks.Dynatrace
 {
     class DynatraceTextFormatter : ITextFormatter
     {
-        private string _applicationId;
-        private string _hostName;
-        private string _environment;
+        private static readonly string[] ROOT_PROPERTIES = { "TraceId", "SpanId" }; // OpenTelemetry
 
-        public DynatraceTextFormatter(string applicationId, string hostName, string environment)
+        private readonly string _applicationId;
+        private readonly string _hostName;
+        private readonly string _environment;
+        private readonly string _propertiesPrefix;
+
+        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix)
         {
             _applicationId = applicationId;
             _hostName = hostName;
             _environment = environment;
+            _propertiesPrefix = propertiesPrefix;
         }
 
         public void Format(LogEvent logEvent, TextWriter output)
@@ -66,7 +70,7 @@ namespace Serilog.Sinks.Dynatrace
 
             if (logEvent.Properties.Count != 0)
             {
-                WriteProperties(logEvent.Properties, output, "attr.");
+                WriteProperties(logEvent.Properties, output, _propertiesPrefix);
             }
 
             output.Write('}');
@@ -74,11 +78,12 @@ namespace Serilog.Sinks.Dynatrace
 
         private static void WriteProperties(
             IReadOnlyDictionary<string, LogEventPropertyValue> properties,
-            TextWriter output, string prefixKey = "")
+            TextWriter output, string prefixKey)
         {
             foreach (var property in properties)
             {
                 var flatKey = prefixKey + property.Key;
+                if (ROOT_PROPERTIES.Contains(property.Key)) flatKey = property.Key; 
                 switch (property.Value) 
                 {
                     case ScalarValue scalar:

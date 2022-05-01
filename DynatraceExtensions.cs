@@ -17,7 +17,8 @@ namespace Serilog
             int? batchPostingLimit = null,
             int? queueLimit = null,
             TimeSpan? period = null,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
+            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
+            string propertiesPrefix = "atts.")
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
@@ -34,7 +35,7 @@ namespace Serilog
                 batchPostingLimit: batchPostingLimit ?? 50,
                 queueLimit: queueLimit ?? 100,
                 period: period ?? TimeSpan.FromSeconds(15),
-                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName),
+                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName, propertiesPrefix),
                 batchFormatter: new DynatraceBatchFormatter(),
                 restrictedToMinimumLevel: restrictedToMinimumLevel,
                 httpClient: new DynatraceHttpClient(accessToken));
@@ -49,7 +50,8 @@ namespace Serilog
             int? batchPostingLimit = null,
             string bufferPathFormat = "dynatrace-buffer-{Date}.json",
             TimeSpan? period = null,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
+            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
+            string propertiesPrefix = "atts.")
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
@@ -66,7 +68,7 @@ namespace Serilog
                 bufferPathFormat: bufferPathFormat,
                 batchPostingLimit: batchPostingLimit ?? 50,
                 period: period ?? TimeSpan.FromSeconds(15),
-                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName),
+                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName, propertiesPrefix),
                 batchFormatter: new DynatraceBatchFormatter(),
                 restrictedToMinimumLevel: restrictedToMinimumLevel,
                 httpClient: new DynatraceHttpClient(accessToken));
