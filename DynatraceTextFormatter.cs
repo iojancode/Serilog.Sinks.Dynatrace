@@ -11,7 +11,7 @@ namespace Serilog.Sinks.Dynatrace
 {
     class DynatraceTextFormatter : ITextFormatter
     {
-        private static readonly string[] ROOT_PROPERTIES = { "TraceId", "SpanId" }; // OpenTelemetry
+        private static readonly string[] ROOT_PROPERTIES = { "trace_id", "span_id" }; // OpenTelemetry
 
         private readonly string _applicationId;
         private readonly string _hostName;
