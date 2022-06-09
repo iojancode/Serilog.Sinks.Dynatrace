@@ -51,7 +51,7 @@ namespace Serilog
             string bufferPathFormat = "dynatrace-buffer-{Date}.json",
             TimeSpan? period = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-            string propertiesPrefix = "atts.")
+            string propertiesPrefix = "attr.")
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
