@@ -18,7 +18,7 @@ namespace Serilog
             int? queueLimit = null,
             TimeSpan? period = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-            string propertiesPrefix = "atts.")
+            string propertiesPrefix = "attr.")
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
