@@ -90,7 +90,7 @@ namespace Serilog.Sinks.Dynatrace
                         output.Write(",");
                         JsonValueFormatter.WriteQuotedJsonString(flatKey, output);
                         output.Write(':');
-                        JsonValueFormatter.WriteQuotedJsonString(scalar.Value.ToString(), output); // Only values of the String type are supported
+                        JsonValueFormatter.WriteQuotedJsonString(Convert.ToString(scalar.Value), output); // Only values of the String type are supported
                         break;
                     case SequenceValue sequence:
                         int seq = 0;
