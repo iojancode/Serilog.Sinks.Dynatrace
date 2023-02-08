@@ -46,7 +46,7 @@ namespace Serilog.Sinks.Dynatrace
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             output.Write("{\"timestamp\":\"");
-            output.Write(logEvent.Timestamp.ToString("o"));
+            output.Write(logEvent.Timestamp.ToUnixTimeMilliseconds());
 
             output.Write("\",\"level\":\"");
             output.Write(logEvent.Level);

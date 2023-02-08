@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
     <Description>Serilog Sink that sends log events to Dynatrace https://www.dynatrace.com/</Description>
     <PackageId>Serilog.Sinks.Dynatrace</PackageId>
     <PackageTags>dynatrace;serilog;sink;logging</PackageTags>
@@ -9,7 +9,7 @@
     <RepositoryUrl>https://github.com/iojancode/Serilog.Sinks.Dynatrace</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
