@@ -17,13 +17,15 @@ namespace Serilog.Sinks.Dynatrace
         private readonly string _hostName;
         private readonly string _environment;
         private readonly string _propertiesPrefix;
+        private readonly Dictionary<string, string> _staticAttributes;
 
-        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix)
+        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix, Dictionary<string,string> staticAttributes)
         {
             _applicationId = applicationId;
             _hostName = hostName;
             _environment = environment;
             _propertiesPrefix = propertiesPrefix;
+            _staticAttributes = staticAttributes;
         }
 
         public void Format(LogEvent logEvent, TextWriter output)
@@ -53,6 +55,12 @@ namespace Serilog.Sinks.Dynatrace
 
             output.Write("\",\"application.id\":\"");
             output.Write(_applicationId);
+
+            foreach(var attributePair in _staticAttributes)
+            {
+                output.Write("\",\""+attributePair.Key+"\":\"");
+                output.Write(attributePair.Value);
+            }
 
             output.Write("\",\"host.name\":\"");
             output.Write(_hostName);
