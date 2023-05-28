@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
@@ -17,13 +17,15 @@ namespace Serilog.Sinks.Dynatrace
         private readonly string _hostName;
         private readonly string _environment;
         private readonly string _propertiesPrefix;
+        private readonly IReadOnlyDictionary<string, string> _customAttributes;
 
-        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix)
+        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix, IReadOnlyDictionary<string, string> customAttributes)
         {
             _applicationId = applicationId;
             _hostName = hostName;
             _environment = environment;
             _propertiesPrefix = propertiesPrefix;
+            _customAttributes = customAttributes;
         }
 
         public void Format(LogEvent logEvent, TextWriter output)
@@ -73,6 +75,11 @@ namespace Serilog.Sinks.Dynatrace
                 WriteProperties(logEvent.Properties, output, _propertiesPrefix);
             }
 
+            if (_customAttributes != null)
+            {
+                WriteAttributes(_customAttributes, output);
+            }
+
             output.Write('}');
         }
 
@@ -103,6 +110,19 @@ namespace Serilog.Sinks.Dynatrace
                         WriteProperties(dictionary.Elements.ToDictionary(e => e.Key.Value.ToString(), e => e.Value), output, flatKey + ".");
                         break;
                 }
+            }
+        }
+
+        private static void WriteAttributes(
+            IReadOnlyDictionary<string, string> attributes,
+            TextWriter output)
+        {
+            foreach (var attributePair in attributes)
+            {
+                output.Write(",");
+                JsonValueFormatter.WriteQuotedJsonString(attributePair.Key, output);
+                output.Write(':');
+                JsonValueFormatter.WriteQuotedJsonString(attributePair.Value, output);
             }
         }
 
