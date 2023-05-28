@@ -12,7 +12,6 @@ namespace Serilog
         /// <summary>
         /// Adds a Sink that logs to Dynatrace via the ingest endpoint
         /// </summary>
-        /// <param name="sinkConfiguration"></param>
         /// <param name="accessToken">The Dynatrace ApiToken</param>
         /// <param name="ingestUrl">The endpoint for log ingestion, usually of the form "https://{instanceId}.live.dynatrace.com/api/v2/logs/ingest"</param>
         /// <param name="applicationId">Will be populated as application.id in all log entries</param>
@@ -22,9 +21,9 @@ namespace Serilog
         /// <param name="period">Serilog http sink pass-through</param>
         /// <param name="restrictedToMinimumLevel">Serilog http sink pass-through</param>
         /// <param name="propertiesPrefix">A prefix for properties derived from the serilog log template arguments</param>
-        /// <param name="staticAttributes">Additional metadata akin to the application.id that will be set on each log message</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="staticAttributes">Additional attributes that will be set on each log message</param>
+        /// <returns>Serilog LoggerConfiguration</returns>
+        /// <exception cref="ArgumentNullException">Thrown when accessToken or ingestUrl is null</exception>
         public static LoggerConfiguration Dynatrace(
             this LoggerSinkConfiguration sinkConfiguration,
             string accessToken,
@@ -36,7 +35,7 @@ namespace Serilog
             TimeSpan? period = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string propertiesPrefix = "attr.",
-            Dictionary<string,string> staticAttributes = null)
+            IReadOnlyDictionary<string, string> staticAttributes = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
@@ -62,7 +61,6 @@ namespace Serilog
         /// <summary>
         /// Adds a Sink that logs to Dynatrace via the ingest endpoint with DurableHttp
         /// </summary>
-        /// <param name="sinkConfiguration"></param>
         /// <param name="accessToken">The Dynatrace ApiToken</param>
         /// <param name="ingestUrl">The endpoint for log ingestion, usually of the form "https://{instanceId}.live.dynatrace.com/api/v2/logs/ingest"</param>
         /// <param name="applicationId">Will be populated as application.id in all log entries</param>
@@ -72,9 +70,9 @@ namespace Serilog
         /// <param name="period">Serilog http sink pass-through</param>
         /// <param name="restrictedToMinimumLevel">Serilog http sink pass-through</param>
         /// <param name="propertiesPrefix">A prefix for properties derived from the serilog log template arguments</param>
-        /// <param name="staticAttributes">Additional metadata akin to application.id that will be set on each log message</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="staticAttributes">Additional attributes that will be set on each log message</param>
+        /// <returns>Serilog LoggerConfiguration</returns>
+        /// <exception cref="ArgumentNullException">Thrown when accessToken or ingestUrl is null</exception>
         public static LoggerConfiguration DurableDynatrace(
             this LoggerSinkConfiguration sinkConfiguration,
             string accessToken,
@@ -86,7 +84,7 @@ namespace Serilog
             TimeSpan? period = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string propertiesPrefix = "attr.",
-            Dictionary<string,string> staticAttributes = null)
+            Dictionary<string, string> staticAttributes = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
