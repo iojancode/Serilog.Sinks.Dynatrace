@@ -21,7 +21,7 @@ namespace Serilog
         /// <param name="period">Serilog http sink pass-through</param>
         /// <param name="restrictedToMinimumLevel">Serilog http sink pass-through</param>
         /// <param name="propertiesPrefix">A prefix for properties derived from the serilog log template arguments</param>
-        /// <param name="staticAttributes">Additional attributes that will be set on each log message</param>
+        /// <param name="customAttributes">Additional attributes that will be set on each log message</param>
         /// <returns>Serilog LoggerConfiguration</returns>
         /// <exception cref="ArgumentNullException">Thrown when accessToken or ingestUrl is null</exception>
         public static LoggerConfiguration Dynatrace(
@@ -35,7 +35,7 @@ namespace Serilog
             TimeSpan? period = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string propertiesPrefix = "attr.",
-            IReadOnlyDictionary<string, string> staticAttributes = null)
+            IReadOnlyDictionary<string, string> customAttributes = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
@@ -52,7 +52,7 @@ namespace Serilog
                 batchPostingLimit: batchPostingLimit ?? 50,
                 queueLimit: queueLimit ?? 100,
                 period: period ?? TimeSpan.FromSeconds(15),
-                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName, propertiesPrefix, staticAttributes),
+                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName, propertiesPrefix, customAttributes),
                 batchFormatter: new DynatraceBatchFormatter(),
                 restrictedToMinimumLevel: restrictedToMinimumLevel,
                 httpClient: new DynatraceHttpClient(accessToken));
@@ -70,7 +70,7 @@ namespace Serilog
         /// <param name="period">Serilog http sink pass-through</param>
         /// <param name="restrictedToMinimumLevel">Serilog http sink pass-through</param>
         /// <param name="propertiesPrefix">A prefix for properties derived from the serilog log template arguments</param>
-        /// <param name="staticAttributes">Additional attributes that will be set on each log message</param>
+        /// <param name="customAttributes">Additional attributes that will be set on each log message</param>
         /// <returns>Serilog LoggerConfiguration</returns>
         /// <exception cref="ArgumentNullException">Thrown when accessToken or ingestUrl is null</exception>
         public static LoggerConfiguration DurableDynatrace(
@@ -84,7 +84,7 @@ namespace Serilog
             TimeSpan? period = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string propertiesPrefix = "attr.",
-            Dictionary<string, string> staticAttributes = null)
+            Dictionary<string, string> customAttributes = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
@@ -101,7 +101,7 @@ namespace Serilog
                 bufferPathFormat: bufferPathFormat,
                 batchPostingLimit: batchPostingLimit ?? 50,
                 period: period ?? TimeSpan.FromSeconds(15),
-                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName, propertiesPrefix, staticAttributes),
+                textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName, propertiesPrefix, customAttributes),
                 batchFormatter: new DynatraceBatchFormatter(),
                 restrictedToMinimumLevel: restrictedToMinimumLevel,
                 httpClient: new DynatraceHttpClient(accessToken));

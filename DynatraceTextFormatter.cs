@@ -17,15 +17,15 @@ namespace Serilog.Sinks.Dynatrace
         private readonly string _hostName;
         private readonly string _environment;
         private readonly string _propertiesPrefix;
-        private readonly IReadOnlyDictionary<string, string> _staticAtts;
+        private readonly IReadOnlyDictionary<string, string> _customAttributes;
 
-        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix, IReadOnlyDictionary<string, string> staticAtts)
+        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix, IReadOnlyDictionary<string, string> customAttributes)
         {
             _applicationId = applicationId;
             _hostName = hostName;
             _environment = environment;
             _propertiesPrefix = propertiesPrefix;
-            _staticAtts = staticAtts;
+            _customAttributes = customAttributes;
         }
 
         public void Format(LogEvent logEvent, TextWriter output)
@@ -75,9 +75,9 @@ namespace Serilog.Sinks.Dynatrace
                 WriteProperties(logEvent.Properties, output, _propertiesPrefix);
             }
 
-            if (_staticAtts != null)
+            if (_customAttributes != null)
             {
-                WriteStatic(_staticAtts, output);
+                WriteAttributes(_customAttributes, output);
             }
 
             output.Write('}');
@@ -113,7 +113,7 @@ namespace Serilog.Sinks.Dynatrace
             }
         }
 
-        private static void WriteStatic(
+        private static void WriteAttributes(
             IReadOnlyDictionary<string, string> attributes,
             TextWriter output)
         {
