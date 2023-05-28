@@ -84,7 +84,7 @@ namespace Serilog
             TimeSpan? period = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string propertiesPrefix = "attr.",
-            Dictionary<string, string> customAttributes = null)
+            IReadOnlyDictionary<string, string> customAttributes = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
