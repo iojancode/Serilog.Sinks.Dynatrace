@@ -12,6 +12,7 @@ namespace Serilog.Sinks.Dynatrace
     class DynatraceTextFormatter : ITextFormatter
     {
         private static readonly string[] ROOT_PROPERTIES = { "trace_id", "span_id" }; // OpenTelemetry
+        private const string DYNATRACE_PREFIX = "dt.";
 
         private readonly string _applicationId;
         private readonly string _hostName;
@@ -90,7 +91,8 @@ namespace Serilog.Sinks.Dynatrace
             foreach (var property in properties)
             {
                 var flatKey = prefixKey + property.Key;
-                if (ROOT_PROPERTIES.Contains(property.Key)) flatKey = property.Key; 
+                if (ROOT_PROPERTIES.Contains(property.Key)) flatKey = property.Key;
+                if (property.Key.StartsWith(DYNATRACE_PREFIX)) flatKey = property.Key;
                 switch (property.Value) 
                 {
                     case ScalarValue scalar:
