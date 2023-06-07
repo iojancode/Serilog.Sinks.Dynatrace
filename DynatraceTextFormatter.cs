@@ -11,7 +11,20 @@ namespace Serilog.Sinks.Dynatrace
 {
     class DynatraceTextFormatter : ITextFormatter
     {
-        private static readonly string[] ROOT_PROPERTIES = { "trace_id", "span_id" }; // OpenTelemetry
+        // Needed by dynatrace as is. Should not be prefixed
+        private static readonly string[] ROOT_PROPERTIES = { 
+            // Trace specifics
+            "trace_id", 
+            "span_id",
+            "trace_sampled",
+
+            // Process specifics
+            "dt.entity.process_group_instance",
+
+            // Host specifics
+            "dt.entity.host",
+            "dt.host_group",
+            "dt.host_group.id"}; 
 
         private readonly string _applicationId;
         private readonly string _hostName;
