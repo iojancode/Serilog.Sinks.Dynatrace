@@ -1,42 +1,45 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Serilog.Sinks.Http.BatchFormatters;
+using System.Text;
+using Serilog.Sinks.Http;
 
 namespace Serilog.Sinks.Dynatrace
 {
-    class DynatraceBatchFormatter : BatchFormatter
+    class DynatraceBatchFormatter : IBatchFormatter
     {
+        private readonly long? eventBodyLimitBytes;
+
         public DynatraceBatchFormatter(long? eventBodyLimitBytes = 256 * 1024)
-            : base(eventBodyLimitBytes)
         {
+            this.eventBodyLimitBytes = eventBodyLimitBytes;
         }
 
-        public override void Format(IEnumerable<string> logEvents, TextWriter output)
+        public void Format(IEnumerable<string> logEvents, TextWriter output)
         {
             if (logEvents == null) throw new ArgumentNullException(nameof(logEvents));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            if (!logEvents.Any()) return; // abort
-
-            output.Write("[");
-
-            var delimStart = string.Empty;
+            var delimStart = "[";
+            var any = false;
 
             foreach (var logEvent in logEvents)
             {
                 if (string.IsNullOrWhiteSpace(logEvent)) continue; 
 
-                if (CheckEventBodySize(logEvent))
+                if (Encoding.UTF8.GetByteCount(logEvent) <= eventBodyLimitBytes)
                 {
                     output.Write(delimStart);
                     output.Write(logEvent);
                     delimStart = ",";
+                    any = true;
                 }
             }
 
-            output.Write("]");
+            if (any)
+            {
+                output.Write("]");
+            }
         }
     }
 }
