@@ -51,7 +51,7 @@ namespace Serilog
 
             return sinkConfiguration.Http(ingestUrl,
                 logEventsInBatchLimit: logEventsInBatchLimit ?? 50,
-                queueLimitBytes: queueLimitBytes ?? 50,
+                queueLimitBytes: queueLimitBytes,
                 period: period ?? TimeSpan.FromSeconds(15),
                 textFormatter: new DynatraceTextFormatter(applicationId, hostName, envName, propertiesPrefix, customAttributes),
                 batchFormatter: new ArrayBatchFormatter(),
