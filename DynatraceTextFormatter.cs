@@ -11,25 +11,27 @@ namespace Serilog.Sinks.Dynatrace
 {
     class DynatraceTextFormatter : ITextFormatter
     {
-        private static readonly string[] ROOT_PROPERTIES = { "trace_id", "span_id" }; // OpenTelemetry
+        private static readonly JsonValueFormatter Instance = new JsonValueFormatter();
 
         private readonly string _applicationId;
         private readonly string _hostName;
         private readonly string _environment;
-        private readonly string _propertiesPrefix;
-        private readonly IReadOnlyDictionary<string, string> _customAttributes;
 
-        public DynatraceTextFormatter(string applicationId, string hostName, string environment, string propertiesPrefix, IReadOnlyDictionary<string, string> customAttributes)
+        public DynatraceTextFormatter(string applicationId, string hostName, string environment)
         {
+            if (applicationId == null) throw new ArgumentNullException(nameof(applicationId));
+            if (hostName == null) throw new ArgumentNullException(nameof(hostName));
+
             _applicationId = applicationId;
             _hostName = hostName;
             _environment = environment;
-            _propertiesPrefix = propertiesPrefix;
-            _customAttributes = customAttributes;
         }
 
         public void Format(LogEvent logEvent, TextWriter output)
         {
+            if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
+            if (output == null) throw new ArgumentNullException(nameof(output));
+
             try
             {
                 var buffer = new StringWriter();
@@ -67,17 +69,17 @@ namespace Serilog.Sinks.Dynatrace
 
             output.Write("\",\"content\":");
             var message = logEvent.MessageTemplate.Render(logEvent.Properties);
-            var exception = logEvent.Exception != null ? Environment.NewLine + logEvent.Exception : "";
-            JsonValueFormatter.WriteQuotedJsonString(message + exception, output);
+            JsonValueFormatter.WriteQuotedJsonString(message, output);
+
+            if (logEvent.Exception != null)
+            {
+                output.Write(",\"exception\":");
+                JsonValueFormatter.WriteQuotedJsonString(logEvent.Exception.ToString(), output);
+            }
 
             if (logEvent.Properties.Count != 0)
             {
-                WriteProperties(logEvent.Properties, output, _propertiesPrefix);
-            }
-
-            if (_customAttributes != null)
-            {
-                WriteAttributes(_customAttributes, output);
+                WriteProperties(logEvent.Properties, output);
             }
 
             output.Write('}');
@@ -85,12 +87,11 @@ namespace Serilog.Sinks.Dynatrace
 
         private static void WriteProperties(
             IReadOnlyDictionary<string, LogEventPropertyValue> properties,
-            TextWriter output, string prefixKey)
+            TextWriter output, string prefixKey = "")
         {
             foreach (var property in properties)
             {
                 var flatKey = prefixKey + property.Key;
-                if (ROOT_PROPERTIES.Contains(property.Key)) flatKey = property.Key; 
                 switch (property.Value) 
                 {
                     case ScalarValue scalar:
@@ -110,19 +111,6 @@ namespace Serilog.Sinks.Dynatrace
                         WriteProperties(dictionary.Elements.ToDictionary(e => e.Key.Value.ToString(), e => e.Value), output, flatKey + ".");
                         break;
                 }
-            }
-        }
-
-        private static void WriteAttributes(
-            IReadOnlyDictionary<string, string> attributes,
-            TextWriter output)
-        {
-            foreach (var attributePair in attributes)
-            {
-                output.Write(",");
-                JsonValueFormatter.WriteQuotedJsonString(attributePair.Key, output);
-                output.Write(':');
-                JsonValueFormatter.WriteQuotedJsonString(attributePair.Value, output);
             }
         }
 
