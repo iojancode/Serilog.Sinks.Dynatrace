@@ -2,23 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Serilog.Sinks.Http.BatchFormatters;
+using Serilog.Sinks.Http;
 
 namespace Serilog.Sinks.Dynatrace
 {
-    class DynatraceBatchFormatter : BatchFormatter
+    class DynatraceBatchFormatter : IBatchFormatter
     {
-        public DynatraceBatchFormatter(long? eventBodyLimitBytes = 256 * 1024)
-            : base(eventBodyLimitBytes)
-        {
-        }
-
-        public override void Format(IEnumerable<string> logEvents, TextWriter output)
+        public void Format(IEnumerable<string> logEvents, TextWriter output)
         {
             if (logEvents == null) throw new ArgumentNullException(nameof(logEvents));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            if (!logEvents.Any()) return; // abort
+            // Abort if sequence of log events is empty
+            if (!logEvents.Any())
+            {
+                return;
+            }
 
             output.Write("[");
 
@@ -26,14 +25,14 @@ namespace Serilog.Sinks.Dynatrace
 
             foreach (var logEvent in logEvents)
             {
-                if (string.IsNullOrWhiteSpace(logEvent)) continue; 
-
-                if (CheckEventBodySize(logEvent))
+                if (string.IsNullOrWhiteSpace(logEvent))
                 {
-                    output.Write(delimStart);
-                    output.Write(logEvent);
-                    delimStart = ",";
+                    continue;
                 }
+
+                output.Write(delimStart);
+                output.Write(logEvent);
+                delimStart = ",";
             }
 
             output.Write("]");
